@@ -5,10 +5,10 @@ import json
 app = Flask(__name__)
 app.config["DEBUG"] = True
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
-	username="revelations",
-	password="baobaowanyingyu",
-	hostname="revelations.mysql.pythonanywhere-services.com",
-	databasename="revelations$ftmdb")
+	username="root",
+	password="root",
+	hostname="140.143.12.108",
+	databasename="revelations")
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
