@@ -1,0 +1,77 @@
+from flask import Flask, Response, request
+from flask_sqlalchemy import SQLAlchemy
+import json
+
+app = Flask(__name__)
+app.config["DEBUG"] = True
+SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
+	username="revelations",
+	password="baobaowanyingyu",
+	hostname="revelations.mysql.pythonanywhere-services.com",
+	databasename="revelations$ftmdb")
+app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
+app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
+
+class Schedule(db.Model):
+
+	__tablename__ = "schedule"
+
+	id = db.Column(db.Integer, primary_key=True)
+	course_developer = db.Column(db.String(50))
+	foreign_teacher = db.Column(db.String(50))
+	slot_index = db.Column(db.Integer)
+	event = db.Column(db.String(20))
+	studio = db.Column(db.String(20))
+	date = db.Column(db.String(10))
+
+@app.route('/hello')
+def hello():
+    return 'Hello World'
+
+@app.route('/arrange/<date>')
+def arrange(date):
+    ftGroup = db.session.query(Schedule).filter(Schedule.date==date).group_by(Schedule.foreign_teacher).all()
+    allArrange = []
+    for ftSchedule in ftGroup:
+        arrangeList = {}
+        ftArrange = db.session.query(Schedule).filter(Schedule.date==date, Schedule.foreign_teacher==ftSchedule.foreign_teacher).all()
+        ftArrangeArray = []
+        for schedule in ftArrange:
+            scheduleJson = {}
+            scheduleJson['ft'] = schedule.foreign_teacher
+            scheduleJson['cd'] = schedule.course_developer
+            scheduleJson['slotIndex'] = schedule.slot_index
+            scheduleJson['event'] = schedule.event
+            scheduleJson['studio'] = schedule.studio
+            ftArrangeArray.append(scheduleJson)
+        arrangeList['name'] = ftSchedule.foreign_teacher
+        arrangeList['schedule'] = ftArrangeArray
+        allArrange.append(arrangeList)
+    db.session.close()
+    return Response(json.dumps(allArrange), mimetype="text/json")
+
+@app.route('/schedule/add', methods=['POST'])
+def schedule():
+    print(request.form.values())
+    if request.method == 'POST':
+        cd = request.form['cd']
+        ft = request.form['ft']
+        slotIndex = request.form['slot_index']
+        event = request.form['event']
+        studio = request.form['studio']
+        date = request.form['date']
+        result = ''
+        if cd and ft and slotIndex and event and studio and date:
+            newSchedule = Schedule(course_developer=cd, foreign_teacher=ft, slot_index=slotIndex, event=event, studio=studio, date=date)
+            db.session.add(newSchedule)
+            db.session.commit()
+            db.session.close()
+            result = json.dumps({'code': 1})
+            return Response(result, mimetype="text/json")
+    result = json.dumps({'code': 2, 'msg': 'Paramter invalid'})
+    return Response(result, mimetype="text/json")
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=80, debug=True)
