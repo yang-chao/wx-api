@@ -86,7 +86,7 @@ def updateSlot():
         ft = request.form['ft']
         slotIndex = request.form['slot_index']
         date = request.form['date']
-        if ft and slotIndex and data:
+        if ft and slotIndex and date:
             newSlot = Slot(foreign_teacher=ft, slot_index=slotIndex, date=date)
             db.session.add(newSlot)
             db.session.commit()
