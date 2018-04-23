@@ -81,7 +81,7 @@ def schedule():
     return Response(result, mimetype="text/json")
 
 @app.route('/slot/<date>/<ft>')
-def slot():
+def slot(date, ft):
     slots = db.session.query(Slot).filter(Slot.date==date, Slot.foreign_teacher==ft).all()
     ftSlotsOfDay = {}
     ftSlotsOfDay['ft'] = ft
