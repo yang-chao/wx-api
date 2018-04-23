@@ -30,7 +30,7 @@ class Slot(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     foreign_teacher = db.Column(db.String(50))
-    slot_index = db.Column(db.Integer)
+    slot_index = db.Column(db.String(100))
     date = db.Column(db.String(10))
         
 
@@ -82,7 +82,7 @@ def schedule():
 
 @app.route('/slot/<date>/<ft>')
 def slot():
-    slots = db.session.query(Slot).filter(Slot.date==date, Slot.foreign_teacher=ft).all()
+    slots = db.session.query(Slot).filter(Slot.date==date, Slot.foreign_teacher==ft).all()
     ftSlotsOfDay = {}
     ftSlotsOfDay['ft'] = ft
     ftSlotsOfDay['date'] = date
