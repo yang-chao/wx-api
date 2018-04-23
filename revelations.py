@@ -15,7 +15,6 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 class Schedule(db.Model):
-
 	__tablename__ = "schedule"
 
 	id = db.Column(db.Integer, primary_key=True)
@@ -25,6 +24,15 @@ class Schedule(db.Model):
 	event = db.Column(db.String(20))
 	studio = db.Column(db.String(20))
 	date = db.Column(db.String(10))
+
+class Slot(db.Model):
+    __tablename__ = "slot"
+
+    id = db.Column(db.Integer, primary_key=True)
+    foreign_teacher = db.Column(db.String(50))
+    slot_index = db.Column(db.Integer)
+    date = db.Column(db.String(10))
+        
 
 @app.route('/hello')
 def hello():
@@ -62,14 +70,28 @@ def schedule():
         event = request.form['event']
         studio = request.form['studio']
         date = request.form['date']
-        result = ''
+        
         if cd and ft and slotIndex and event and studio and date:
             newSchedule = Schedule(course_developer=cd, foreign_teacher=ft, slot_index=slotIndex, event=event, studio=studio, date=date)
             db.session.add(newSchedule)
             db.session.commit()
             db.session.close()
-            result = json.dumps({'code': 1})
-            return Response(result, mimetype="text/json")
+            return Response(json.dumps({'code': 1}), mimetype="text/json")
+    result = json.dumps({'code': 2, 'msg': 'Paramter invalid'})
+    return Response(result, mimetype="text/json")
+
+@app.route('/slot/update', methods=['POST'])
+def updateSlot():
+    if request.method == 'POST':
+        ft = request.form['ft']
+        slotIndex = request.form['slot_index']
+        date = request.form['date']
+        if ft and slotIndex and data:
+            newSlot = Slot(foreign_teacher=ft, slot_index=slotIndex, date=date)
+            db.session.add(newSlot)
+            db.session.commit()
+            db.session.close()
+            return Response(json.dumps({'code': 1}), mimetype="text/json")
     result = json.dumps({'code': 2, 'msg': 'Paramter invalid'})
     return Response(result, mimetype="text/json")
 
