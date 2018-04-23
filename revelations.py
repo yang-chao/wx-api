@@ -80,6 +80,15 @@ def schedule():
     result = json.dumps({'code': 2, 'msg': 'Paramter invalid'})
     return Response(result, mimetype="text/json")
 
+@app.route('/slot/<date>/<ft>')
+def slot():
+    slots = db.session.query(Slot).filter(Slot.date==date, Slot.foreign_teacher=ft).all()
+    ftSlotsOfDay = {}
+    ftSlotsOfDay['ft'] = ft
+    ftSlotsOfDay['date'] = date
+    ftSlotsOfDay['slot_indexs'] = slots.slot_index.split(",")
+    Response(json.dumps(ftSlotsOfDay), mimetype="text/json")
+
 @app.route('/slot/update', methods=['POST'])
 def updateSlot():
     if request.method == 'POST':
