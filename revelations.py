@@ -100,12 +100,15 @@ def arrange(date):
         # 获取外教当天所有时间段的可预约状态
         slots = db.session.query(Slot).filter(Slot.date==date, Slot.foreign_teacher==ftSchedule.foreign_teacher).all()
         if slots and slots[0]:
-            print(slots[0])
+            print(slots[0].slot_index)
             arrangeList['slot_status'] = slots[0].slot_index
         else:
-            initSlotStatus = []
+            initSlotStatus = ''
             for index in range(len(timeSlots)):
-                initSlotStatus.append(-2)
+                if index < len(timeSlots) -1:
+                    initSlotStatus += '-2,'
+                else:
+                    initSlotStatus += '-2'
             arrangeList['slot_status'] = initSlotStatus
         allArrange.append(arrangeList)
     db.session.close()
