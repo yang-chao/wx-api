@@ -56,6 +56,11 @@ def arrange(date):
             ftArrangeArray.append(scheduleJson)
         arrangeList['name'] = ftSchedule.foreign_teacher
         arrangeList['schedule'] = ftArrangeArray
+
+        # 获取外教当天所有时间段的可预约状态
+        slots = db.session.query(Slot).filter(Slot.date==date, Slot.foreign_teacher==ftSchedule.foreign_teacher).all()
+        if slots:
+            arrangeList['slot_status'] = slots.slot_index
         allArrange.append(arrangeList)
     db.session.close()
     return Response(json.dumps(allArrange), mimetype="text/json")
