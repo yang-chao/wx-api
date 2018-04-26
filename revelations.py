@@ -53,6 +53,15 @@ timeSlots = [
     "18:30-18:45",
     "18:45-19:00"
 ]
+foreignTeachers = [
+  "Audrey",
+  "Brint",
+  "Charlotte",
+  "Kaseryn",
+  "Mel",
+  "Shelley",
+  "Vanessa"
+]
 
 class Schedule(db.Model):
 	__tablename__ = "schedule"
@@ -96,11 +105,26 @@ def arrange(date):
             ftArrangeArray.append(scheduleJson)
         arrangeList['name'] = ftSchedule.foreign_teacher
         arrangeList['schedule'] = ftArrangeArray
+        allArrange.append(arrangeList)
+
+    finalArrange = []
+    # 补全所有外教
+    for ft in foreignTeachers:
+        # 如果外教已经有预约安排就取已经存在的数据，否则创建新数据
+        arrangeList = {}
+        for ftArrange in allArrange:
+            if ft == ftArrange.name:
+                arrangeList = ftArrange
+                break
+
+        if len(arrangeList) == 0:
+            arrangeList['name'] = ft
+            arrangeList['schedule'] = []
 
         # 获取外教当天所有时间段的可预约状态
-        slots = db.session.query(Slot).filter(Slot.date==date, Slot.foreign_teacher==ftSchedule.foreign_teacher).all()
+        slots = db.session.query(Slot).filter(Slot.date==date, Slot.foreign_teacher==ftSchedule.ft).all()
         if slots and slots[0]:
-            print(slots[0].slot_index)
+            # print(slots[0].slot_index)
             arrangeList['slot_status'] = slots[0].slot_index
         else:
             initSlotStatus = ''
@@ -110,9 +134,10 @@ def arrange(date):
                 else:
                     initSlotStatus += '-2'
             arrangeList['slot_status'] = initSlotStatus
-        allArrange.append(arrangeList)
+            
+        finalArrange.append(arrangeList)
     db.session.close()
-    return Response(json.dumps(allArrange), mimetype="text/json")
+    return Response(json.dumps(finalArrange), mimetype="text/json")
 
 @app.route('/schedule/add', methods=['POST'])
 def schedule():
