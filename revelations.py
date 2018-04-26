@@ -113,7 +113,7 @@ def arrange(date):
         # 如果外教已经有预约安排就取已经存在的数据，否则创建新数据
         arrangeList = {}
         for ftArrange in allArrange:
-            if ft == ftArrange.name:
+            if ft == ftArrange['name']:
                 arrangeList = ftArrange
                 break
 
