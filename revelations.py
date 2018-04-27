@@ -59,8 +59,7 @@ foreignTeachers = [
   "Charlotte",
   "Kaseryn",
   "Mel",
-  "Shelley",
-  "Vanessa"
+  "Shelley"
 ]
 
 class Schedule(db.Model):
