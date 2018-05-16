@@ -165,7 +165,7 @@ def slot(date, ft):
     ftSlotsOfDay['ft'] = ft
     ftSlotsOfDay['date'] = date
     ftSlotsOfDay['slot_indexs'] = slots.slot_index.split(",")
-    Response(json.dumps(ftSlotsOfDay), mimetype="text/json")
+    return Response(json.dumps(ftSlotsOfDay), mimetype="text/json")
 
 @app.route('/slot/update', methods=['POST'])
 def updateSlot():
@@ -188,7 +188,7 @@ def getStudioStatus(date, slotIndex):
     studiosInUse = []
     for s in schedules:
         studiosInUse.append(s.studio)
-    Response(json.dumps(studiosInUse), mimetype="text/json")
+    return Response(json.dumps(studiosInUse), mimetype="text/json")
 
 
 if __name__ == '__main__':
