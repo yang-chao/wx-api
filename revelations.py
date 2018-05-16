@@ -182,5 +182,14 @@ def updateSlot():
     result = json.dumps({'code': 2, 'msg': 'Paramter invalid'})
     return Response(result, mimetype="text/json")
 
+@app.route('/studio/<date>/<slotIndex>')
+def getStudioStatus(date, slotIndex):
+    schedules = db.session.query(Schedule).filter(Schedule.date==date, Schedule.slot_index==slotIndex).all()
+    studiosInUse = []
+    for s in schedules:
+        studiosInUse.append(s.studio)
+    Response(json.dumps(studiosInUse), mimetype="text/json")
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
